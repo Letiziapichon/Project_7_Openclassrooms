@@ -131,3 +131,141 @@ else:
 
 
     #########################################################################################
+
+    ############ NUMERIC PLOT
+
+    def return_plot(data, column, plot_type, client_value):
+        if plot_type == 'Histogram':
+            fig, ax = plt.subplots(1, 1, figsize=(6, 4))
+            sns.histplot(data=data[data.TARGET == 0][[column, 'TARGET']], x=column, stat="percent")
+            sns.histplot(data=data[data.TARGET == 1][[column, 'TARGET']], x=column, stat="percent", color="orange", alpha=.8)
+            plt.axvline(float(client_value), color='green', linestyle='--', linewidth=3)
+            plt.legend([f"client {selected_id}", "payed", "did not pay"], loc=0, frameon=True)
+            return fig
+
+        if plot_type == 'Point plot':
+            fig, ax = plt.subplots(1, 1, figsize=(6, 4))
+            sns.pointplot(x='TARGET', y=column, data=data[[column, 'TARGET']])
+            plt.axhline(y=client_value, color='green', linestyle='--', linewidth=5)
+            plt.legend([f"client {selected_id}"], loc=0, frameon=True)
+            return fig
+        
+        if plot_type == 'Box plot':
+            fig, ax = plt.subplots(1, 1, figsize=(6, 4))
+            sns.boxplot(x='TARGET', y=column, data=data[[column, 'TARGET']])
+            plt.axhline(y=client_value, color='green', linestyle='--', linewidth=5)
+            plt.legend([f"client {selected_id}"], loc=0, frameon=True)
+            return fig
+
+    st.header("Visualize data") 
+    col1, col2 = st.columns(2)
+
+    plot_types = ['Histogram', 'Point plot', 'Box plot']
+    column_1 = col1.selectbox(label = "Choose a numric column", options = numeric_cols)
+    column_2 = col2.selectbox(label = "Choose a second numeric column", options = numeric_cols)
+
+    plot_type_1 = col1.selectbox(label = "Choose a plot type", options = plot_types)
+    plot_type_2 = col2.selectbox(label = "Choose a second plot type", options = plot_types)
+
+    ### PLOT 1
+    res = req.get(f'http://127.0.0.1:8000/plot_data/?column_1={column_1}')
+    train = pd.DataFrame(res.json())
+
+    res = req.get(f'http://127.0.0.1:8000/client_value/?selected_id={selected_id}&column={column_1}')
+    client_value = res.json()[0]
+
+    fig = return_plot(train, column_1, plot_type_1, client_value)
+    col1.pyplot(fig)
+
+    ### PLOT 2
+    res = req.get(f'http://127.0.0.1:8000/plot_data/?column_1={column_2}')
+    train_2 = pd.DataFrame(res.json())
+
+    res = req.get(f'http://127.0.0.1:8000/client_value/?selected_id={selected_id}&column={column_2}')
+    client_value = res.json()[0]
+
+    fig_2 = return_plot(train_2, column_2, plot_type_2, client_value)
+    col2.pyplot(fig_2)
+
+    ############ CATEGORICAL PLOT
+
+    column_1 = col1.selectbox(label = "Choose a categorical column", options = categorical_cols)
+    column_2 = col2.selectbox(label = "Choose a second categorical column", options = categorical_cols)
+
+    ### PLOT 1
+    res = req.get(f'http://127.0.0.1:8000/plot_data/?column_1={column_1}')
+    train = pd.DataFrame(res.json())
+
+    res = req.get(f'http://127.0.0.1:8000/client_value/?selected_id={selected_id}&column={column_1}')
+    client_value = res.json()[0]
+
+    data_1 = train[column_1].groupby(train['TARGET']).value_counts(normalize=True).rename('percent').reset_index()
+    fig, ax = plt.subplots(1, 1, figsize=(6, 4))
+    plt.title(f"Client: {client_value}")
+    sns.barplot(x=column_1, y="percent", hue="TARGET", data=data_1)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, fontsize=10)
+    col1.pyplot(fig)
+
+    ### PLOT 2
+    res = req.get(f'http://127.0.0.1:8000/plot_data/?column_1={column_2}')
+    train_2 = pd.DataFrame(res.json())
+
+    res = req.get(f'http://127.0.0.1:8000/client_value/?selected_id={selected_id}&column={column_1}')
+    client_value = res.json()[0]
+
+    data_2 = train_2[column_2].groupby(train_2['TARGET']).value_counts(normalize=True).rename('percent').reset_index()
+    fig, ax = plt.subplots(1, 1, figsize=(6, 4))
+    plt.title(f"Client: {client_value}")
+    sns.barplot(x=column_2, y="percent", hue="TARGET", data=data_2)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, fontsize=10)
+    col2.pyplot(fig)
+
+    ################# MULTIVARIATE PLOT
+
+    col1.subheader("Multivariate plot") 
+    col2.subheader("") 
+    column_1 = col1.selectbox(label = "Choose a column", options = sorted(numeric_cols + categorical_cols))
+    column_2 = col1.selectbox(label = "Choose a second column", options = sorted(numeric_cols + categorical_cols))
+
+    res = req.get(f'http://127.0.0.1:8000/plot_data/?column_1={column_1}&column_2={column_2}')
+    train_multi = pd.DataFrame(res.json())
+
+    res = req.get(f'http://127.0.0.1:8000/client_value/?selected_id={selected_id}&column={column_1}')
+    client_value_1 = res.json()[0]
+
+    res = req.get(f'http://127.0.0.1:8000/client_value/?selected_id={selected_id}&column={column_2}')
+    client_value_2 = res.json()[0]
+
+    col1.subheader(f"Client {selected_id}:")
+    col1.text(f"{column_1}: {client_value_1}")
+    col1.text(f"{column_2}: {client_value_2}")
+
+    if (column_1 in numeric_cols and column_2 in categorical_cols) or (column_2 in numeric_cols and column_1 in categorical_cols):
+        fig, ax = plt.subplots(1, 1, figsize=(6, 4))
+        sns.barplot(x=column_1, y=column_2, hue="TARGET", data=train_multi)
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, fontsize=10)
+        col2.pyplot(fig)
+
+    elif column_1 in numeric_cols and column_2 in numeric_cols:
+        fig, ax = plt.subplots(1, 2, figsize=(6, 4), sharex=True, sharey=True)
+        #fig.subplots_adjust(hspace=0.3, wspace=3)
+        sns.scatterplot(x=column_1, y=column_2, data=train_multi[train_multi.TARGET==0], ax=ax[0]).set(title='Repaid the loan')
+        sns.scatterplot(
+            x=column_1,
+            y=column_2,
+            data=train_multi[train_multi.TARGET==1],
+            ax=ax[1],
+            color='orange').set(title='Not repaid the loan')
+        col2.pyplot(fig)
+
+    elif column_1 in categorical_cols and column_2 in categorical_cols:
+        train_multi['count'] = 1
+        fig, ax = plt.subplots(1, 2, figsize=(6, 4), sharex=True, sharey=True)
+        data = train_multi.groupby(['TARGET', column_1, column_2])['count'].sum().reset_index()
+        plt.title(f"Client: {client_value}")
+        sns.barplot(x=column_2, y="count", hue=column_1, data=data[data['TARGET'] == 0], ax=ax[0]).set(title='Repaid the loan')
+        sns.barplot(x=column_2, y="count", hue=column_1, data=data[data['TARGET'] == 1], ax=ax[1]).set(title='Not repaid the loan')
+        ax[0].set_xticklabels(ax[0].get_xticklabels(), rotation=45, fontsize=10)
+        ax[1].set_xticklabels(ax[1].get_xticklabels(), rotation=45, fontsize=10)
+        col2.pyplot(fig)
+
