@@ -1,6 +1,5 @@
 import dill
 import joblib
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -13,9 +12,9 @@ st.set_page_config(layout="wide", page_icon="🔮", page_title="Credit score app
 plt.style.use('classic')
 st.title("Credit Score App")
 
-model = joblib.load('data/model/lgb.pkl')
+model = joblib.load('frontend/data/model/lgb.pkl')
 
-with open('data/explainer', 'rb') as f:
+with open('frontend/data/model/explainer', 'rb') as f:
    explainer = dill.load(f)
 
 # text input to process all the rest
@@ -24,31 +23,32 @@ selected_id = st.text_input('Client ID', '100001')
 
 @st.cache(suppress_st_warning=True)
 def return_raw_data(selected_id):
-    res = req.get(f'http://127.0.0.1:8000/raw_data/?selected_id={selected_id}')
+    res = req.get(f'https://backpretadepenser.herokuapp.com/raw_data/?selected_id={selected_id}')
     raw_data = res.json()
     return raw_data
 
 @st.cache(suppress_st_warning=True)
 def return_score(selected_id):
-    res = req.get(f'http://127.0.0.1:8000/scoring/?selected_id={selected_id}')
+    res = req.get(f'https://backpretadepenser.herokuapp.com/scoring/?selected_id={selected_id}')
+    print(res)
     score = res.json()
     return score
 
 @st.cache(suppress_st_warning=True)
 def return_fi_model():
-    res = req.get(f'http://127.0.0.1:8000/fi_model/')
+    res = req.get(f'https://backpretadepenser.herokuapp.com/fi_model/')
     fi_model = res.json()
     return fi_model
 
 @st.cache(suppress_st_warning=True)
 def return_data_model_client(selected_id): 
-    res = req.get(f'http://127.0.0.1:8000/client_data/?selected_id={selected_id}')
+    res = req.get(f'https://backpretadepenser.herokuapp.com/client_data/?selected_id={selected_id}')
     data_model_client = res.json()
     return data_model_client
 
 @st.cache(suppress_st_warning=True)
 def return_columns(column_type): 
-    res = req.get(f'http://127.0.0.1:8000/columns/?column_type={column_type}')
+    res = req.get(f'https://backpretadepenser.herokuapp.com//columns/?column_type={column_type}')
     columns = list(res.json())
     return columns
 
@@ -279,4 +279,3 @@ else:
         ax[0].set_xticklabels(ax[0].get_xticklabels(), rotation=45, fontsize=10)
         ax[1].set_xticklabels(ax[1].get_xticklabels(), rotation=45, fontsize=10)
         col2_multi.pyplot(fig, figsize=(5,5))
-
