@@ -1,1 +1,1 @@
-web: gunicorn backend/api:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT --preload
+web: unicorn backend/api:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT --preload
