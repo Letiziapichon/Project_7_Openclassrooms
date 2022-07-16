@@ -5,11 +5,11 @@ import pandas as pd
 
 app = FastAPI()
 
-model = joblib.load('data/model/lgb.pkl')
-clients = pd.read_csv('data/application_test.csv')
-clients_preprocess = pd.read_csv('data/app_test_no_encoded_data.csv')
-train_preprocess = pd.read_csv('data/sample_app_train_no_encoded_data.csv')
-data_model = pd.read_csv('data/clients_data.csv')
+model = joblib.load('backend/data/model/lgb.pkl')
+clients = pd.read_csv('backend/data/application_test.csv')
+clients_preprocess = pd.read_csv('backend/data/app_test_no_encoded_data.csv')
+train_preprocess = pd.read_csv('backend/data/sample_app_train_no_encoded_data.csv')
+data_model = pd.read_csv('backend/data/clients_data.csv')
 
 def model_score(data):
     return model.predict_proba(data)[0][0]
