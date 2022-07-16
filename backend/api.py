@@ -5,7 +5,7 @@ import pandas as pd
 
 app = FastAPI()
 
-model = joblib.load('../data/model/lgb.pkl')
+model = joblib.load('..\data\model\lgb.pkl')
 clients = pd.read_csv('../data/application_test.csv')
 clients_preprocess = pd.read_csv('../data/app_test_no_encoded_data.csv')
 train_preprocess = pd.read_csv('../data/sample_app_train_no_encoded_data.csv')
