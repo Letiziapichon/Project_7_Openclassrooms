@@ -7,12 +7,8 @@ app = FastAPI()
 
 model = joblib.load('backend/data/model/lgb.pkl')
 clients = pd.read_csv('backend/data/application_test.csv')
-clients_preprocess = pd.read_csv('backend/data/app_test_no_encoded_data.csv')
-train_preprocess = pd.read_csv('backend/data/sample_app_train_no_encoded_data.csv')
 data_model = pd.read_csv('backend/data/clients_data.csv')
 
-def model_score(data):
-    return model.predict_proba(data)[0][0]
 
 @app.get('/')
 def get_root():
@@ -22,6 +18,10 @@ def get_root():
 async def get_raw_data(selected_id: int):
     data_client = clients[clients.SK_ID_CURR == selected_id]
     return Response(data_client.to_json(orient="records"), media_type="application/json")
+
+
+def model_score(data):
+    return model.predict_proba(data)[0][0]
 
 @app.get('/scoring/')
 async def get_scoring(selected_id: int):
@@ -48,10 +48,12 @@ async def get_client_data(selected_id: int):
 
 @app.get('/columns/')
 async def get_columns(column_type: str):
+    clients_preprocess = pd.read_csv('backend/data/app_test_no_encoded_data.csv')
     if column_type ==  'num':
         columns = list(clients_preprocess.select_dtypes(['int64', 'float64']).columns)[1:]
     else:
         columns = list(clients_preprocess.select_dtypes(['object']).columns)
+    clients_preprocess = None
     return columns
 
 @app.get('/plot_data/')
@@ -61,10 +63,14 @@ async def get_columns(column_1: str, column_2: str=None):
     columns = [column_1, "TARGET"]
     if column_2 != None:
         columns.append(column_2)
+    train_preprocess = pd.read_csv('backend/data/sample_app_train_no_encoded_data.csv')
     data = train_preprocess[columns]
+    train_preprocess = None
     return Response(data.to_json(orient="records"), media_type="application/json")
 
 @app.get('/client_value/')
 async def get_columns(selected_id: int, column:str):
+    clients_preprocess = pd.read_csv('backend/data/app_test_no_encoded_data.csv')
     data = clients_preprocess[clients_preprocess.SK_ID_CURR == selected_id][column]
+    clients_preprocess = None
     return Response(data.to_json(orient="records"), media_type="application/json")
