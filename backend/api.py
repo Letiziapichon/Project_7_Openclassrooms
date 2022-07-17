@@ -5,8 +5,8 @@ import pandas as pd
 
 app = FastAPI()
 
-#model = joblib.load('backend/data/model/lgb.pkl')
-model = pd.read_csv('backend/data/model_output.csv')
+model = joblib.load('backend/data/model/lgb.pkl')
+model_score = pd.read_csv('backend/data/model_output.csv')
 clients = pd.read_csv('backend/data/application_test.csv')
 data_model = pd.read_csv('backend/data/clients_data.csv')
 clients_preprocess = pd.read_csv('backend/data/app_test_no_encoded_data.csv')
@@ -39,7 +39,7 @@ async def get_scoring(selected_id: int):
 
 @app.get('/scoring/')
 async def get_scoring(selected_id: int):
-    score = model[model.SK_ID_CURR == selected_id]['score'].values[0]
+    score = model_score[model_score.SK_ID_CURR == selected_id]['score'].values[0]
     return score
 
 @app.get('/fi_model/')
