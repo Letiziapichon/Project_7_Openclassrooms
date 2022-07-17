@@ -48,7 +48,7 @@ def return_data_model_client(selected_id):
 
 @st.cache(suppress_st_warning=True)
 def return_columns(column_type): 
-    res = req.get(f'https://backpretadepenser.herokuapp.com//columns/?column_type={column_type}')
+    res = req.get(f'https://backpretadepenser.herokuapp.com/columns/?column_type={column_type}')
     columns = list(res.json())
     return columns
 
@@ -98,8 +98,7 @@ else:
     # Visulazing information
     col1_info, col2_info = st.columns(2)
     col1_info.header("Client informations")
-    col1_info.text(f"Age : {int(raw_data[0]['DAYS_BIRTH'] * - 1 / 365)} yo")
-    col1_info.text(f"Gender : {raw_data[0]['CODE_GENDER']}")
+    col1_info.text(f"Age : {int(raw_data[0]['AGE'])} yo")
     col1_info.text(f"Family status : {raw_data[0]['NAME_FAMILY_STATUS']}")
     col1_info.text(f"Revenu : {raw_data[0]['NAME_INCOME_TYPE']}")
     col1_info.text(f"Occupation : {raw_data[0]['OCCUPATION_TYPE']}")
@@ -172,20 +171,20 @@ else:
     plot_type_2 = col2_num.selectbox(label = "Choose a second plot type", options = plot_types)
 
     ### PLOT 1
-    res = req.get(f'http://127.0.0.1:8000/plot_data/?column_1={column_1}')
+    res = req.get(f'https://backpretadepenser.herokuapp.com/plot_data/?column_1={column_1}')
     train = pd.DataFrame(res.json())
 
-    res = req.get(f'http://127.0.0.1:8000/client_value/?selected_id={selected_id}&column={column_1}')
+    res = req.get(f'https://backpretadepenser.herokuapp.com/client_value/?selected_id={selected_id}&column={column_1}')
     client_value = res.json()[0]
 
     fig = return_plot(train, column_1, plot_type_1, client_value)
     col1_num.pyplot(fig)
 
     ### PLOT 2
-    res = req.get(f'http://127.0.0.1:8000/plot_data/?column_1={column_2}')
+    res = req.get(f'https://backpretadepenser.herokuapp.com/plot_data/?column_1={column_2}')
     train_2 = pd.DataFrame(res.json())
 
-    res = req.get(f'http://127.0.0.1:8000/client_value/?selected_id={selected_id}&column={column_2}')
+    res = req.get(f'https://backpretadepenser.herokuapp.com/client_value/?selected_id={selected_id}&column={column_2}')
     client_value = res.json()[0]
 
     fig_2 = return_plot(train_2, column_2, plot_type_2, client_value)
@@ -202,10 +201,10 @@ else:
     column_2 = col2_cat.selectbox(label = "Choose a second categorical column", options = categorical_cols)
 
     ### PLOT 1
-    res = req.get(f'http://127.0.0.1:8000/plot_data/?column_1={column_1}')
+    res = req.get(f'https://backpretadepenser.herokuapp.com/plot_data/?column_1={column_1}')
     train = pd.DataFrame(res.json())
 
-    res = req.get(f'http://127.0.0.1:8000/client_value/?selected_id={selected_id}&column={column_1}')
+    res = req.get(f'https://backpretadepenser.herokuapp.com/client_value/?selected_id={selected_id}&column={column_1}')
     client_value = res.json()[0]
 
     data_1 = train[column_1].groupby(train['TARGET']).value_counts(normalize=True).rename('percent').reset_index()
@@ -216,10 +215,10 @@ else:
     col1_cat.pyplot(fig)
 
     ### PLOT 2
-    res = req.get(f'http://127.0.0.1:8000/plot_data/?column_1={column_2}')
+    res = req.get(f'https://backpretadepenser.herokuapp.com/plot_data/?column_1={column_2}')
     train_2 = pd.DataFrame(res.json())
 
-    res = req.get(f'http://127.0.0.1:8000/client_value/?selected_id={selected_id}&column={column_1}')
+    res = req.get(f'https://backpretadepenser.herokuapp.com/client_value/?selected_id={selected_id}&column={column_1}')
     client_value = res.json()[0]
 
     data_2 = train_2[column_2].groupby(train_2['TARGET']).value_counts(normalize=True).rename('percent').reset_index()
@@ -238,13 +237,13 @@ else:
     column_1 = col1_multi.selectbox(label = "Choose a column", options = sorted(numeric_cols + categorical_cols))
     column_2 = col1_multi.selectbox(label = "Choose a second column", options = sorted(numeric_cols + categorical_cols))
 
-    res = req.get(f'http://127.0.0.1:8000/plot_data/?column_1={column_1}&column_2={column_2}')
+    res = req.get(f'https://backpretadepenser.herokuapp.com/plot_data/?column_1={column_1}&column_2={column_2}')
     train_multi = pd.DataFrame(res.json())
 
-    res = req.get(f'http://127.0.0.1:8000/client_value/?selected_id={selected_id}&column={column_1}')
+    res = req.get(f'https://backpretadepenser.herokuapp.com/client_value/?selected_id={selected_id}&column={column_1}')
     client_value_1 = res.json()[0]
 
-    res = req.get(f'http://127.0.0.1:8000/client_value/?selected_id={selected_id}&column={column_2}')
+    res = req.get(f'https://backpretadepenser.herokuapp.com/client_value/?selected_id={selected_id}&column={column_2}')
     client_value_2 = res.json()[0]
 
     col1_multi.subheader(f"Client {selected_id}:")
