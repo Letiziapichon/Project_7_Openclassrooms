@@ -109,7 +109,7 @@ else:
 
     with col2_info:
         color = "green" if score > 0.6 else "red" if score < 0.4 else "orange"
-        col2_info.markdown(f"<p style='color:green;font-size:30px;margin:0px;padding:0px'>Recommendation : {int(score * 100)}%</p>", unsafe_allow_html=True)
+        col2_info.markdown(f"<p style='color:{color};font-size:30px;margin:0px;padding:0px'>Recommendation : {int(score * 100)}%</p>", unsafe_allow_html=True)
         #st.components.v1.html(f"<p style='color:black;font-size:40px;margin:0px;padding:0px'>Recommendation : <em style='border: 1px solid {color}; background-color:{color}; border-radius:12px; padding-left:10px; padding-right:10px'>{int(score * 100)}%</em></p>")
     
     st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
