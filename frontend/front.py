@@ -165,7 +165,7 @@ else:
 
     plot_types = ['Histogram', 'Point plot', 'Box plot']
     column_1 = col1_num.selectbox(label = "Choose a numric column", options = numeric_cols)
-    column_2 = col2_num.selectbox(label = "Choose a second numeric column", options = sorted(numeric_cols, ascending=True))
+    column_2 = col2_num.selectbox(label = "Choose a second numeric column", options = sorted(numeric_cols, reverse=True))
 
     plot_type_1 = col1_num.selectbox(label = "Choose a plot type", options = sorted(plot_types))
     plot_type_2 = col2_num.selectbox(label = "Choose a second plot type", options = plot_types)
@@ -198,7 +198,7 @@ else:
     col1_cat, col2_cat = st.columns(2)
 
     column_1 = col1_cat.selectbox(label = "Choose a categorical column", options = categorical_cols)
-    column_2 = col2_cat.selectbox(label = "Choose a second categorical column", options = sorted(categorical_cols, ascending=True))
+    column_2 = col2_cat.selectbox(label = "Choose a second categorical column", options = sorted(categorical_cols, reverse=True))
 
     ### PLOT 1
     res = req.get(f'https://backpretadepenser.herokuapp.com/plot_data/?column_1={column_1}')
