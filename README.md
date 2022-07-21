@@ -1,2 +1,5 @@
 # Project_7_Openclassrooms
-Project 7 - Openclassrooms
+
+Deployment frontend
+
+url: https://pretadepenserprojet7.herokuapp.com/
