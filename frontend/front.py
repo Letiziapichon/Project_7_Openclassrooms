@@ -148,14 +148,14 @@ else:
             fig, ax = plt.subplots(1, 1, figsize=(6, 4))
             sns.pointplot(x='TARGET', y=column, data=data[[column, 'TARGET']])
             plt.axhline(y=client_value, color='green', linestyle='--', linewidth=5)
-            plt.legend([f"client {selected_id}"], loc=0, frameon=True)
+            plt.legend(["all data", f"client {selected_id}"], loc=0, frameon=True)
             return fig
         
         if plot_type == 'Box plot':
             fig, ax = plt.subplots(1, 1, figsize=(6, 4))
             sns.boxplot(x='TARGET', y=column, data=data[[column, 'TARGET']])
             plt.axhline(y=client_value, color='green', linestyle='--', linewidth=5)
-            plt.legend([f"client {selected_id}"], loc=0, frameon=True)
+            plt.legend(["all data", f"client {selected_id}"], loc=0, frameon=True)
             return fig
 
 
@@ -165,9 +165,9 @@ else:
 
     plot_types = ['Histogram', 'Point plot', 'Box plot']
     column_1 = col1_num.selectbox(label = "Choose a numric column", options = numeric_cols)
-    column_2 = col2_num.selectbox(label = "Choose a second numeric column", options = numeric_cols)
+    column_2 = col2_num.selectbox(label = "Choose a second numeric column", options = sorted(numeric_cols, ascending=True))
 
-    plot_type_1 = col1_num.selectbox(label = "Choose a plot type", options = plot_types)
+    plot_type_1 = col1_num.selectbox(label = "Choose a plot type", options = sorted(plot_types))
     plot_type_2 = col2_num.selectbox(label = "Choose a second plot type", options = plot_types)
 
     ### PLOT 1
@@ -198,7 +198,7 @@ else:
     col1_cat, col2_cat = st.columns(2)
 
     column_1 = col1_cat.selectbox(label = "Choose a categorical column", options = categorical_cols)
-    column_2 = col2_cat.selectbox(label = "Choose a second categorical column", options = categorical_cols)
+    column_2 = col2_cat.selectbox(label = "Choose a second categorical column", options = sorted(categorical_cols, ascending=True))
 
     ### PLOT 1
     res = req.get(f'https://backpretadepenser.herokuapp.com/plot_data/?column_1={column_1}')
@@ -235,7 +235,7 @@ else:
     col1_multi.markdown(f"<p style='color:#1363DF;font-size:30px;margin:0px;padding:0px'>Multifeatures</p>", unsafe_allow_html=True)
     col2_multi.subheader("") 
     column_1 = col1_multi.selectbox(label = "Choose a column", options = sorted(numeric_cols + categorical_cols))
-    column_2 = col1_multi.selectbox(label = "Choose a second column", options = sorted(numeric_cols + categorical_cols))
+    column_2 = col1_multi.selectbox(label = "Choose a second column", options = sorted(numeric_cols + categorical_cols, ascending=True))
 
     res = req.get(f'https://backpretadepenser.herokuapp.com/plot_data/?column_1={column_1}&column_2={column_2}')
     train_multi = pd.DataFrame(res.json())
