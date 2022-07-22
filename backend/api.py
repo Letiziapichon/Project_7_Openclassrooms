@@ -81,3 +81,6 @@ async def get_columns(column_1: str, column_2: str=None):
 async def get_columns(selected_id: int, column:str):
     data = clients_preprocess[clients_preprocess.SK_ID_CURR == selected_id][column]
     return Response(data.to_json(orient="records"), media_type="application/json")"""
+
+if __name__=="__main__":
+    app.run(debug=True)
