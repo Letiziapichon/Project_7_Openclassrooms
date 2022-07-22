@@ -1,9 +1,9 @@
 from starlette.responses import Response
-from fastapi import FastAPI
+from flask import Flask
 import joblib
 import pandas as pd
 
-app = FastAPI()
+app = Flask()
 
 model = joblib.load('backend/data/model/lgb.pkl')
 #model_score = pd.read_csv('backend/data/model_output.csv')
@@ -13,7 +13,7 @@ data_model = pd.read_csv('backend/data/clients_data.csv')
 #train_preprocess = pd.read_csv('backend/data/sample_app_train_no_encoded_data.csv')
 
 
-@app.get('/')
+@app.route('/')
 def get_root():
 	return {'message': 'Welcome to the credit score API'}
 """
@@ -27,7 +27,7 @@ async def get_raw_data(selected_id: int):
 # So we will use a file where the predictions have already been made
 # This code can however be run locally. 
 
-@app.post('/scoring/')
+@app.route('/scoring/<selected_id>', methods=['GET'] )
 async def get_scoring(selected_id: int):
     data = data_model[data_model.SK_ID_CURR == selected_id]
     data.drop(columns=['SK_ID_CURR'], inplace=True)
