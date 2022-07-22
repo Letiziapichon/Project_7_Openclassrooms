@@ -26,21 +26,20 @@ async def get_raw_data(selected_id: int):
 # the output of the prediction in a time lower than the timeout
 # So we will use a file where the predictions have already been made
 # This code can however be run locally. 
-"""
-def model_score(data):
-    return model.predict_proba(data)[0][0]
 
 @app.get('/scoring/')
 async def get_scoring(selected_id: int):
     data = data_model[data_model.SK_ID_CURR == selected_id]
     data.drop(columns=['SK_ID_CURR'], inplace=True)
-    score =  model_score(data)
-    return score"""
+    score =  model.predict_proba(data)
+    print(score)
+    return score[0][0]
+""" 
 
 @app.get('/scoring/')
 async def get_scoring(selected_id: int):
     score = model_score[model_score.SK_ID_CURR == selected_id]['score'].values[0]
-    return score
+    return score"""
 
 @app.get('/fi_model/')
 async def get_fi_model():
