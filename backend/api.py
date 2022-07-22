@@ -6,21 +6,21 @@ import pandas as pd
 app = FastAPI()
 
 model = joblib.load('backend/data/model/lgb.pkl')
-model_score = pd.read_csv('backend/data/model_output.csv')
-clients = pd.read_csv('backend/data/application_test.csv')
+#model_score = pd.read_csv('backend/data/model_output.csv')
+#clients = pd.read_csv('backend/data/application_test.csv')
 data_model = pd.read_csv('backend/data/clients_data.csv')
-clients_preprocess = pd.read_csv('backend/data/app_test_no_encoded_data.csv')
-train_preprocess = pd.read_csv('backend/data/sample_app_train_no_encoded_data.csv')
+#clients_preprocess = pd.read_csv('backend/data/app_test_no_encoded_data.csv')
+#train_preprocess = pd.read_csv('backend/data/sample_app_train_no_encoded_data.csv')
 
 
 @app.get('/')
 def get_root():
 	return {'message': 'Welcome to the credit score API'}
-
+"""
 @app.get('/raw_data/')
 async def get_raw_data(selected_id: int):
     data_client = clients[clients.SK_ID_CURR == selected_id]
-    return Response(data_client.to_json(orient="records"), media_type="application/json")
+    return Response(data_client.to_json(orient="records"), media_type="application/json")"""
 
 # The ram available on the free version of heroku does not allow to return 
 # the output of the prediction in a time lower than the timeout
@@ -32,7 +32,7 @@ async def get_scoring(selected_id: int):
     data = data_model[data_model.SK_ID_CURR == selected_id]
     data.drop(columns=['SK_ID_CURR'], inplace=True)
     print('ok')
-    score = model.predict(data)
+    score = model.predict_proba(data)
     print('score: '+ str(score))
     return score[0][0]
 """ 
@@ -40,7 +40,7 @@ async def get_scoring(selected_id: int):
 @app.get('/scoring/')
 async def get_scoring(selected_id: int):
     score = model_score[model_score.SK_ID_CURR == selected_id]['score'].values[0]
-    return score"""
+    return score
 
 @app.get('/fi_model/')
 async def get_fi_model():
@@ -79,4 +79,4 @@ async def get_columns(column_1: str, column_2: str=None):
 @app.get('/client_value/')
 async def get_columns(selected_id: int, column:str):
     data = clients_preprocess[clients_preprocess.SK_ID_CURR == selected_id][column]
-    return Response(data.to_json(orient="records"), media_type="application/json")
+    return Response(data.to_json(orient="records"), media_type="application/json")"""
