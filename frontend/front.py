@@ -148,14 +148,14 @@ else:
             fig, ax = plt.subplots(1, 1, figsize=(6, 4))
             sns.pointplot(x='TARGET', y=column, data=data[[column, 'TARGET']])
             plt.axhline(y=client_value, color='green', linestyle='--', linewidth=5)
-            plt.legend(["TARGET 0 ", "TARGET 1", f"client {selected_id}"], loc=0, frameon=True)
+            #plt.legend(["TARGET 0 ", "TARGET 1", f"client {selected_id}"], loc=0, frameon=True)
             return fig
         
         if plot_type == 'Box plot':
             fig, ax = plt.subplots(1, 1, figsize=(6, 4))
             sns.boxplot(x='TARGET', y=column, data=data[[column, 'TARGET']])
             plt.axhline(y=client_value, color='green', linestyle='--', linewidth=5)
-            plt.legend(["TARGET 0 ", "TARGET 1", f"client {selected_id}"], loc=0, frameon=True)
+            #plt.legend(["TARGET 0 ", "TARGET 1", f"client {selected_id}"], loc=0, frameon=True)
             return fig
 
 
@@ -175,9 +175,9 @@ else:
     train = pd.DataFrame(res.json())
 
     res = req.get(f'https://backpretadepenser.herokuapp.com/client_value/?selected_id={selected_id}&column={column_1}')
-    client_value = res.json()[0]
+    client_value_1 = res.json()[0]
 
-    fig = return_plot(train, column_1, plot_type_1, client_value)
+    fig = return_plot(train, column_1, plot_type_1, client_value_1)
     col1_num.pyplot(fig)
 
     ### PLOT 2
@@ -185,9 +185,9 @@ else:
     train_2 = pd.DataFrame(res.json())
 
     res = req.get(f'https://backpretadepenser.herokuapp.com/client_value/?selected_id={selected_id}&column={column_2}')
-    client_value = res.json()[0]
+    client_value_2 = res.json()[0]
 
-    fig_2 = return_plot(train_2, column_2, plot_type_2, client_value)
+    fig_2 = return_plot(train_2, column_2, plot_type_2, client_value_2)
     col2_num.pyplot(fig_2)
 
     ############ CATEGORICAL PLOT
@@ -218,7 +218,7 @@ else:
     res = req.get(f'https://backpretadepenser.herokuapp.com/plot_data/?column_1={column_2}')
     train_2 = pd.DataFrame(res.json())
 
-    res = req.get(f'https://backpretadepenser.herokuapp.com/client_value/?selected_id={selected_id}&column={column_1}')
+    res = req.get(f'https://backpretadepenser.herokuapp.com/client_value/?selected_id={selected_id}&column={column_2}')
     client_value = res.json()[0]
 
     data_2 = train_2[column_2].groupby(train_2['TARGET']).value_counts(normalize=True).rename('percent').reset_index()
