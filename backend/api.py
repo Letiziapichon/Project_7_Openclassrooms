@@ -2,11 +2,12 @@ from starlette.responses import Response
 from fastapi import FastAPI
 import joblib
 import pandas as pd
-
+import pickle
 
 app = FastAPI()
 
-model = joblib.load('backend/data/model/lgb.pkl')
+with open('backend/data/model/lgb.pkl', 'rb') as model_path:
+    model = pickle.load(model_path)
 #model_score = pd.read_csv('backend/data/model_output.csv')
 #clients = pd.read_csv('backend/data/application_test.csv')
 data_model = pd.read_csv('backend/data/clients_data.csv')
@@ -14,7 +15,7 @@ data_model = pd.read_csv('backend/data/clients_data.csv')
 #train_preprocess = pd.read_csv('backend/data/sample_app_train_no_encoded_data.csv')
 
 
-@app.route('/')
+@app.get('/')
 def get_root():
 	return {'message': 'Welcome to the credit score API'}
 """
