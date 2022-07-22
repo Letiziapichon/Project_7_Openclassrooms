@@ -1,11 +1,10 @@
 from starlette.responses import Response
-from flask import Flask
+from fastapi import FastAPI
 import joblib
 import pandas as pd
-import lightgbm
-from flask import jsonify
 
-app = Flask(__name__)
+
+app = FastAPI()
 
 model = joblib.load('backend/data/model/lgb.pkl')
 #model_score = pd.read_csv('backend/data/model_output.csv')
@@ -29,14 +28,14 @@ async def get_raw_data(selected_id: int):
 # So we will use a file where the predictions have already been made
 # This code can however be run locally. 
 
-@app.route('/scoring', methods=['POST'])
+@app.post('/scoring/')
 async def get_scoring(selected_id: int):
     data = data_model[data_model.SK_ID_CURR == selected_id]
     data.drop(columns=['SK_ID_CURR'], inplace=True)
     print('ok')
-    score = model.predict_proba(data)
+    score = model['model'].predict_proba(data)
     print('score: '+ str(score))
-    return jsonify({'score': score[0][0]})
+    return score[0][0]
 """ 
 
 @app.get('/scoring/')
@@ -82,6 +81,3 @@ async def get_columns(column_1: str, column_2: str=None):
 async def get_columns(selected_id: int, column:str):
     data = clients_preprocess[clients_preprocess.SK_ID_CURR == selected_id][column]
     return Response(data.to_json(orient="records"), media_type="application/json")"""
-
-if __name__=="__main__":
-    app.run(debug=True)
