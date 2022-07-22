@@ -5,7 +5,7 @@ import pandas as pd
 
 app = FastAPI()
 
-model = joblib.load('backend/data/model/lgb_compress.pkl')
+model = joblib.load('backend/data/model/lgb_fake.pkl')
 #model_score = pd.read_csv('backend/data/model_output.csv')
 #clients = pd.read_csv('backend/data/application_test.csv')
 data_model = pd.read_csv('backend/data/clients_data.csv')
