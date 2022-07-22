@@ -2,10 +2,11 @@ from starlette.responses import Response
 from fastapi import FastAPI
 import joblib
 import pandas as pd
+import lightgbm
 
 app = FastAPI()
 
-model = joblib.load('backend/data/model/xgboost_fake.pkl')
+model = joblib.load('backend/data/model/lgb.pkl')
 #model_score = pd.read_csv('backend/data/model_output.csv')
 #clients = pd.read_csv('backend/data/application_test.csv')
 data_model = pd.read_csv('backend/data/clients_data.csv')
@@ -32,7 +33,7 @@ async def get_scoring(selected_id: int):
     data = data_model[data_model.SK_ID_CURR == selected_id]
     data.drop(columns=['SK_ID_CURR'], inplace=True)
     print('ok')
-    score = model.predict(data)
+    score = model.predict_proba(data)
     print('score: '+ str(score))
     return score[0][0]
 """ 
