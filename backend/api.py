@@ -31,9 +31,9 @@ async def get_raw_data(selected_id: int):
 async def get_scoring(selected_id: int):
     data = data_model[data_model.SK_ID_CURR == selected_id]
     data.drop(columns=['SK_ID_CURR'], inplace=True)
-    score = model.predict_proba(data)
-    print(score)
-    return score[0][0]
+    #score = model.predict_proba(data)
+    score = data['EXT_SOURCE_1']
+    return score
 """ 
 
 @app.get('/scoring/')
