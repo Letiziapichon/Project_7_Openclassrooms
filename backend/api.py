@@ -3,6 +3,7 @@ from flask import Flask
 import joblib
 import pandas as pd
 import lightgbm
+from flask import jsonify
 
 app = Flask(__name__)
 
@@ -35,7 +36,7 @@ async def get_scoring(selected_id: int):
     print('ok')
     score = model.predict_proba(data)
     print('score: '+ str(score))
-    return score[0][0]
+    return jsonify({'score': score[0][0]})
 """ 
 
 @app.get('/scoring/')
