@@ -4,7 +4,7 @@ import joblib
 import pandas as pd
 import lightgbm
 
-app = Flask()
+app = Flask(__name__)
 
 model = joblib.load('backend/data/model/lgb.pkl')
 #model_score = pd.read_csv('backend/data/model_output.csv')
