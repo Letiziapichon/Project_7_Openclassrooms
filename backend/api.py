@@ -3,7 +3,7 @@ from fastapi import FastAPI
 import joblib
 import pandas as pd
 
-app = Flask()
+app = FastAPI()
 
 model = joblib.load('backend/data/model/reg.pkl')
 #model_score = pd.read_csv('backend/data/model_output.csv')
