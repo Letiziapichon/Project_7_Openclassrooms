@@ -27,11 +27,11 @@ async def get_raw_data(selected_id: int):
 # So we will use a file where the predictions have already been made
 # This code can however be run locally. 
 
-@app.get('/scoring/')
+@app.post('/scoring/')
 async def get_scoring(selected_id: int):
     data = data_model[data_model.SK_ID_CURR == selected_id]
     data.drop(columns=['SK_ID_CURR'], inplace=True)
-    score =  model.predict_proba(data)
+    score = model.predict_proba(data)
     print(score)
     return score[0][0]
 """ 
