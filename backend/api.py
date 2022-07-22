@@ -2,12 +2,11 @@ from starlette.responses import Response
 from fastapi import FastAPI
 import joblib
 import pandas as pd
-import pickle
+
 
 app = FastAPI()
 
-with open('backend/data/model/lgb.pkl', 'rb') as model_path:
-    model = pickle.load(model_path)
+model = joblib.load('backend/data/model/lgb.pkl')
 #model_score = pd.read_csv('backend/data/model_output.csv')
 #clients = pd.read_csv('backend/data/application_test.csv')
 data_model = pd.read_csv('backend/data/clients_data.csv')
