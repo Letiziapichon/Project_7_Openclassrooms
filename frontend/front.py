@@ -89,7 +89,7 @@ else:
     score = return_score(selected_id) 
     fi_model = return_fi_model()
     data_model_client = return_data_model_client(selected_id)
-    columns_plot = list(pd.DataFrame(fi_model).sort_values('value', ascending=False)['feature'])
+    #columns_plot = list(pd.DataFrame(fi_model).sort_values('value', ascending=False)['feature'])
     numeric_cols = return_columns('num')
     categorical_cols = return_columns('cat')
 
