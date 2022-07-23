@@ -6,7 +6,6 @@ import pandas as pd
 app = FastAPI()
 
 model = joblib.load('backend/data/model/lgb.pkl')
-model_score = pd.read_csv('backend/data/model_output.csv')
 clients = pd.read_csv('backend/data/application_test.csv')
 data_model = pd.read_csv('backend/data/clients_data.csv')
 clients_preprocess = pd.read_csv('backend/data/app_test_no_encoded_data.csv')
