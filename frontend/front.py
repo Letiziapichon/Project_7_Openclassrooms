@@ -29,10 +29,8 @@ def return_raw_data(selected_id):
 
 @st.cache(suppress_st_warning=True)
 def return_score(selected_id):
-    res = req.get(f'https://backpretadepenser.herokuapp.com/scoring/?selected_id={selected_id}')
-    print(res)
-    score = res.json()
-    return score
+    res = req.get(f'https://backpretadepenser.herokuapp.com/scoring/?selected_id={int(selected_id)}')
+    return res
 
 @st.cache(suppress_st_warning=True)
 def return_fi_model():
@@ -86,7 +84,9 @@ raw_data = return_raw_data(selected_id)
 if len(raw_data) == 0:
     st.header("The entered customer does not exist")
 else:
-    score = return_score(selected_id) 
+    #score = return_score(selected_id)
+    res = req.get(f'https://backpretadepenser.herokuapp.com/scoring/?selected_id={int(selected_id)}')
+    score = res.json()
     fi_model = return_fi_model()
     data_model_client = return_data_model_client(selected_id)
     #columns_plot = list(pd.DataFrame(fi_model).sort_values('value', ascending=False)['feature'])
