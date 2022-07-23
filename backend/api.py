@@ -23,7 +23,7 @@ async def get_raw_data(selected_id: int):
     return Response(data_client.to_json(orient="records"), media_type="application/json")
 
 
-@app.post('/scoring/')
+@app.get('/scoring/')
 async def get_scoring(selected_id: int):
     data = data_model[data_model.SK_ID_CURR == selected_id]
     data.drop(columns=['SK_ID_CURR'], inplace=True)
