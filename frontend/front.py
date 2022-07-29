@@ -7,6 +7,8 @@ import requests as req
 import seaborn as sns
 import streamlit as st
 import streamlit.components.v1 as components
+import plotly.express as px
+import plotly.graph_objects as go
 
 st.set_page_config(layout="wide", page_icon="🔮", page_title="Credit score app")
 plt.style.use('classic')
@@ -136,34 +138,23 @@ else:
 
 
     def return_plot(data, column, plot_type, client_value):
-        if plot_type == 'Histogram':
-            fig, ax = plt.subplots(1, 1, figsize=(6, 4))
-            sns.histplot(data=data[data.TARGET == 0][[column, 'TARGET']], x=column, stat="probability")
-            sns.histplot(data=data[data.TARGET == 1][[column, 'TARGET']], x=column, stat="probability", color="orange", alpha=.8)
-            plt.axvline(float(client_value), color='green', linestyle='--', linewidth=3)
-            plt.legend([f"client {selected_id}", "payed", "did not pay"], loc=0, frameon=True)
-            return fig
-
-        if plot_type == 'Point plot':
-            fig, ax = plt.subplots(1, 1, figsize=(6, 4))
-            sns.pointplot(x='TARGET', y=column, data=data[[column, 'TARGET']])
-            plt.axhline(y=client_value, color='green', linestyle='--', linewidth=5)
-            #plt.legend(["TARGET 0 ", "TARGET 1", f"client {selected_id}"], loc=0, frameon=True)
-            return fig
-        
-        if plot_type == 'Box plot':
-            fig, ax = plt.subplots(1, 1, figsize=(6, 4))
-            sns.boxplot(x='TARGET', y=column, data=data[[column, 'TARGET']])
-            plt.axhline(y=client_value, color='green', linestyle='--', linewidth=5)
-            #plt.legend(["TARGET 0 ", "TARGET 1", f"client {selected_id}"], loc=0, frameon=True)
-            return fig
-
+        data['TARGET'] = data['TARGET'].apply(lambda x: 'Payed' if x == 0 else ('Did not pay') )
+        fig = px.histogram(data, x=column,  color='TARGET', marginal=plot_type, histnorm='probability density')
+        fig.update_traces(opacity=0.75)
+        fig.add_trace(go.Scatter(
+                            x=[client_value],
+                            y=[0],
+                            name="Client Value", 
+                            mode="markers",
+                            marker=dict(color="Crimson", size=10)
+                        ))
+        return fig
 
     st.header("Visualization of the distribution of customers according to whether they have repaid the loan or not")
     st.markdown(f"<p style='color:#1363DF;font-size:30px;margin:0px;padding:0px'>Numeric features</p>", unsafe_allow_html=True)
     col1_num, col2_num = st.columns(2)
 
-    plot_types = ['Histogram', 'Point plot', 'Box plot']
+    plot_types = ['box', 'rug', 'violin']
     column_1 = col1_num.selectbox(label = "Choose a numric column", options = numeric_cols)
     column_2 = col2_num.selectbox(label = "Choose a second numeric column", options = sorted(numeric_cols, reverse=True))
 
@@ -178,7 +169,7 @@ else:
     client_value_1 = res.json()[0]
 
     fig = return_plot(train, column_1, plot_type_1, client_value_1)
-    col1_num.pyplot(fig)
+    col1_num.plotly_chart(fig, use_container_width=True)
 
     ### PLOT 2
     res = req.get(f'https://backpretadepenser.herokuapp.com/plot_data/?column_1={column_2}')
@@ -188,7 +179,7 @@ else:
     client_value_2 = res.json()[0]
 
     fig_2 = return_plot(train_2, column_2, plot_type_2, client_value_2)
-    col2_num.pyplot(fig_2)
+    col2_num.plotly_chart(fig_2, use_container_width=True)
 
     ############ CATEGORICAL PLOT
     st.markdown("""<hr style="height:3px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
@@ -208,11 +199,11 @@ else:
     client_value = res.json()[0]
 
     data_1 = train[column_1].groupby(train['TARGET']).value_counts(normalize=True).rename('percent').reset_index()
-    fig, ax = plt.subplots(1, 1, figsize=(6, 4))
-    plt.title(f"Client: {client_value}")
-    sns.barplot(x=column_1, y="percent", hue="TARGET", data=data_1)
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, fontsize=10)
-    col1_cat.pyplot(fig)
+    data_1['TARGET'] = data_1['TARGET'].apply(lambda x: 'Payed' if x == 0 else ('Did not pay') )
+    fig = px.bar(data_1, x=column_1, y="percent", 
+                 color="TARGET", barmode="group",
+                 title=f"Client {selected_id}: {client_value}")
+    col1_cat.plotly_chart(fig, use_container_width=True)
 
     ### PLOT 2
     res = req.get(f'https://backpretadepenser.herokuapp.com/plot_data/?column_1={column_2}')
@@ -222,11 +213,11 @@ else:
     client_value = res.json()[0]
 
     data_2 = train_2[column_2].groupby(train_2['TARGET']).value_counts(normalize=True).rename('percent').reset_index()
-    fig, ax = plt.subplots(1, 1, figsize=(6, 4))
-    plt.title(f"Client: {client_value}")
-    sns.barplot(x=column_2, y="percent", hue="TARGET", data=data_2)
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, fontsize=10)
-    col2_cat.pyplot(fig)
+    data_2['TARGET'] = data_2['TARGET'].apply(lambda x: 'Payed' if x == 0 else ('Did not pay') )
+    fig = px.bar(data_2, x=column_2, y="percent", 
+                 color="TARGET", barmode="group", 
+                 title=f"Client {selected_id}: {client_value}")
+    col2_cat.plotly_chart(fig, use_container_width=True)
 
     ################# MULTIVARIATE PLOT
     st.markdown("""<hr style="height:3px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
@@ -239,42 +230,41 @@ else:
 
     res = req.get(f'https://backpretadepenser.herokuapp.com/plot_data/?column_1={column_1}&column_2={column_2}')
     train_multi = pd.DataFrame(res.json())
-
+    train_multi['TARGET'] = train_multi['TARGET'].apply(lambda x: 'Payed' if x == 0 else ('Did not pay') )
     res = req.get(f'https://backpretadepenser.herokuapp.com/client_value/?selected_id={selected_id}&column={column_1}')
     client_value_1 = res.json()[0]
 
     res = req.get(f'https://backpretadepenser.herokuapp.com/client_value/?selected_id={selected_id}&column={column_2}')
     client_value_2 = res.json()[0]
 
-    col1_multi.subheader(f"Client {selected_id}:")
-    col1_multi.text(f"{column_1}: {client_value_1}")
-    col1_multi.text(f"{column_2}: {client_value_2}")
+    col2_multi.subheader(f"Client {selected_id}:")
+    col2_multi.text(f"{column_1}: {client_value_1}")
+    col2_multi.text(f"{column_2}: {client_value_2}")
 
-    if (column_1 in numeric_cols and column_2 in categorical_cols) or (column_2 in numeric_cols and column_1 in categorical_cols):
-        fig, ax = plt.subplots(1, 1, figsize=(6, 4))
-        sns.barplot(x=column_1, y=column_2, hue="TARGET", data=train_multi)
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, fontsize=10)
-        col2_multi.pyplot(fig)
+    if (column_1 in numeric_cols and column_2 in categorical_cols):
+        fig = px.histogram(train_multi, x=column_2, y=column_1, 
+                    color="TARGET",  barmode='group',
+             histfunc='avg')
+        st.plotly_chart(fig, use_container_width=True)
+
+    elif (column_2 in numeric_cols and column_1 in categorical_cols):
+        fig = px.histogram(train_multi, x=column_1, y=column_2, 
+                    color="TARGET",  barmode='group',
+             histfunc='avg')
+        st.plotly_chart(fig, use_container_width=True)
 
     elif column_1 in numeric_cols and column_2 in numeric_cols:
-        fig, ax = plt.subplots(1, 2, figsize=(6, 4), sharex=True, sharey=True)
-        #fig.subplots_adjust(hspace=0.3, wspace=3)
-        sns.scatterplot(x=column_1, y=column_2, data=train_multi[train_multi.TARGET==0], ax=ax[0]).set(title='Repaid the loan')
-        sns.scatterplot(
-            x=column_1,
-            y=column_2,
-            data=train_multi[train_multi.TARGET==1],
-            ax=ax[1],
-            color='orange').set(title='Not repaid the loan')
-        col2_multi.pyplot(fig, figsize=(5,5))
+        fig = px.scatter(train_multi, x=column_1, y=column_2, color="TARGET")
+        fig.update_traces(opacity=0.75)
+        fig.add_trace(go.Scatter(
+                            x=[client_value_1],
+                            y=[client_value_2],
+                            name="Client Value", 
+                            mode="markers",
+                            marker=dict(color="green", size=10)
+                        ))
+        st.plotly_chart(fig, use_container_width=True)
 
     elif column_1 in categorical_cols and column_2 in categorical_cols:
-        train_multi['count'] = 1
-        fig, ax = plt.subplots(1, 2, figsize=(6, 4), sharex=True, sharey=True)
-        data = train_multi.groupby(['TARGET', column_1, column_2])['count'].sum().reset_index()
-        plt.title(f"Client: {client_value}")
-        sns.barplot(x=column_2, y="count", hue=column_1, data=data[data['TARGET'] == 0], ax=ax[0]).set(title='Repaid the loan')
-        sns.barplot(x=column_2, y="count", hue=column_1, data=data[data['TARGET'] == 1], ax=ax[1]).set(title='Not repaid the loan')
-        ax[0].set_xticklabels(ax[0].get_xticklabels(), rotation=45, fontsize=10)
-        ax[1].set_xticklabels(ax[1].get_xticklabels(), rotation=45, fontsize=10)
-        col2_multi.pyplot(fig, figsize=(5,5))
+        st.text(f"You have selected twp categorical columns")
+        st.text(f"Please select two numeric columns or a numeric and a categorical columns")
